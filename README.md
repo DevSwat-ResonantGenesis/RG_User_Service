@@ -162,7 +162,7 @@ Centralized activity feed aggregated from all services:
 | Service | Why |
 |---|---|
 | **RG_Memory** | Memory is per-conversation, not per-user-profile |
-| **RG_Mining** | Mining is standalone, doesn't affect user dashboard yet |
+| **RG_TrainingNet_Mining** | Mining is standalone, doesn't affect user dashboard yet |
 | **RG_DSID_Blockchain** | Chain data is accessed through its own dashboard |
 | **RG_IDE / RG_Axtention_IDE** | IDE has its own session, doesn't call user service |
 
