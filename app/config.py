@@ -1,24 +1,18 @@
-from pydantic_settings import BaseSettings
+"""Configuration for RG User Service."""
 
+import os
 
-class Settings(BaseSettings):
-    SERVICE_NAME: str = "user_service"
-
-    POSTGRES_HOST: str = "user_db"
-    POSTGRES_PORT: int = 5432
-    POSTGRES_USER: str = "user_user"
-    POSTGRES_PASSWORD: str = "user_pass"
-    POSTGRES_DB: str = "user_db"
-
-    class Config:
-        env_file = ".env"
-        env_prefix = "USER_"
-        case_sensitive = False
-
-
-settings = Settings()
-
-DATABASE_URL = (
-    f"postgresql+asyncpg://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}"
-    f"@{settings.POSTGRES_HOST}:{settings.POSTGRES_PORT}/{settings.POSTGRES_DB}"
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql+asyncpg://resonant:resonant@shared_postgres:5432/resonant_users",
 )
+
+# Internal API secret — services must send this to call /activity/ingest
+INTERNAL_API_SECRET = os.getenv("INTERNAL_API_SECRET", "")
+
+# Cross-service URLs (internal docker network)
+AUTH_SERVICE_URL = os.getenv("AUTH_SERVICE_URL", "http://auth_service:8000")
+BILLING_SERVICE_URL = os.getenv("BILLING_SERVICE_URL", "http://billing_service:8000")
+CHAT_SERVICE_URL = os.getenv("CHAT_SERVICE_URL", "http://chat_service:8000")
+AGENT_ENGINE_URL = os.getenv("AGENT_ENGINE_URL", "http://agent_engine_service:8000")
+NOTIFICATION_SERVICE_URL = os.getenv("NOTIFICATION_SERVICE_URL", "http://notification_service:8000")

@@ -1,21 +1,25 @@
-import sys
-from pathlib import Path
+"""RG User Service — profiles, preferences, org settings, dashboard, activity log."""
+
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-# Deterministic sys.path
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
-
-# Single service entrypoint
-app = FastAPI(
-    title="User_Service Service",
-    description="Service for Genesis2026",
-    version="1.0.0"
+from .db import engine, Base
+from .routers import (
+    preferences_router,
+    users_router,
+    settings_router,
+    dashboard_router,
+    orgs_router,
+    activity_router,
 )
 
-# Add CORS middleware
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
+logger = logging.getLogger(__name__)
+
+app = FastAPI(title="RG User Service", version="2.0.0")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -24,20 +28,35 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Health check endpoint
+
+@app.on_event("startup")
+async def startup():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    logger.info("User Service started — tables ensured")
+
+
 @app.get("/health")
-async def health_check():
+async def health():
     return {"status": "healthy", "service": "user_service"}
 
-# Root endpoint
+
 @app.get("/")
 async def root():
-    return {"message": f"User_Service Service is running"}
+    return {"service": "user_service", "version": "2.0.0"}
 
-# Service-specific endpoint
+
 @app.get("/api/v1/status")
 async def status():
-    return {"service": "user_service", "status": "active", "version": "1.0.0"}
+    return {"service": "user_service", "status": "active", "version": "2.0.0"}
+
+
+app.include_router(preferences_router)
+app.include_router(users_router)
+app.include_router(settings_router)
+app.include_router(dashboard_router)
+app.include_router(orgs_router)
+app.include_router(activity_router)
 
 if __name__ == "__main__":
     import uvicorn

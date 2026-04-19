@@ -1,45 +1,23 @@
-import os
+"""Async database engine and session factory."""
 
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
-from sqlalchemy.pool import NullPool
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from sqlalchemy.orm import DeclarativeBase
 
 from .config import DATABASE_URL
 
-
-Base = declarative_base()
-
-DB_POOL_SIZE = int(os.getenv("USER_DB_POOL_SIZE", "1"))
-DB_MAX_OVERFLOW = int(os.getenv("USER_DB_MAX_OVERFLOW", "0"))
-DB_POOL_TIMEOUT = int(os.getenv("USER_DB_POOL_TIMEOUT", "30"))
-DB_POOL_RECYCLE = int(os.getenv("USER_DB_POOL_RECYCLE", "1800"))
-DB_POOL_CLASS = (os.getenv("USER_DB_POOL_CLASS", "queue").strip().lower() or "queue")
-
-_engine_kwargs = {
-    "echo": False,
-}
-
-if DB_POOL_CLASS in ("null", "none"):
-    _engine_kwargs["poolclass"] = NullPool
-else:
-    _engine_kwargs.update(
-        {
-            "pool_size": DB_POOL_SIZE,
-            "max_overflow": DB_MAX_OVERFLOW,
-            "pool_timeout": DB_POOL_TIMEOUT,
-            "pool_recycle": DB_POOL_RECYCLE,
-            "pool_pre_ping": True,
-            "pool_use_lifo": True,
-        }
-    )
-
-engine = create_async_engine(DATABASE_URL, **_engine_kwargs)
-
-async_session = sessionmaker(
-    engine,
-    expire_on_commit=False,
-    class_=AsyncSession,
+engine = create_async_engine(
+    DATABASE_URL,
+    pool_size=5,
+    max_overflow=3,
+    pool_pre_ping=True,
+    echo=False,
 )
+
+async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+
+
+class Base(DeclarativeBase):
+    pass
 
 
 async def get_session():
