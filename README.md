@@ -1,6 +1,6 @@
 # RG User Service
 
-> **Part of the [ResonantGenesis](https://resonant.dev-swat.com) platform** — User profiles, preferences, org settings, dashboard stats, and activity log.
+> **Part of the [ResonantGenesis](https://dev-swat.com) platform** — User profiles, preferences, org settings, dashboard stats, and activity log.
 
 [![Status: Production](https://img.shields.io/badge/Status-Production-brightgreen.svg)]()
 [![License: RG Source Available](https://img.shields.io/badge/License-RG%20Source%20Available-blue.svg)](LICENSE.txt)
@@ -80,7 +80,7 @@ Centralized activity feed aggregated from all services:
 │  Profile tab           ──→ PUT /users/{id}                          │
 │  Settings pages        ──→ GET/PUT /settings/{path}                 │
 └────────────────────────────────┬────────────────────────────────────┘
-                                 │ HTTPS (resonant.dev-swat.com)
+                                 │ HTTPS (dev-swat.com)
                                  ▼
 ┌─────────────────────────────────────────────────────────────────────┐
 │                       RG_Gateway (FastAPI proxy)                    │
@@ -379,4 +379,4 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 ---
 
-**Organization**: [DevSwat-ResonantGenesis](https://github.com/DevSwat-ResonantGenesis) | **Platform**: [resonant.dev-swat.com](https://resonant.dev-swat.com)
+**Organization**: [DevSwat-ResonantGenesis](https://github.com/DevSwat-ResonantGenesis) | **Platform**: [dev-swat.com](https://dev-swat.com)
